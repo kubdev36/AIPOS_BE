@@ -160,7 +160,7 @@ const createOrder = async (req, res) => {
           debt_amount: debtAmount,
           payment_method: payment_method || "cash",
           payment_status: paymentStatus,
-          status: "completed",
+          status: "pending",
           note: note || null,
         },
       });

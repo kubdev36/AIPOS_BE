@@ -13,6 +13,9 @@ const reportRoutes = require("./routes/report.routes");
 const aiRoutes = require("./routes/ai.routes");
 const faceRoutes = require("./routes/face.routes");
 const userRoutes = require("./routes/user.routes");
+const kitchenRoutes = require("./routes/kitchen.routes");
+const publicRoutes = require("./routes/public.routes");
+const businessAIRoutes = require("./routes/businessAI.routes");
 
 const app = express();
 
@@ -37,6 +40,9 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/face", faceRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/kitchen", kitchenRoutes);
+app.use("/api/public", publicRoutes);
+app.use("/api/business-ai", businessAIRoutes);
 
 const PORT = process.env.PORT || 5000;
 

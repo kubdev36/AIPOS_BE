@@ -692,8 +692,89 @@ const parseMenuByAI = async (payload) => {
   throw new Error("Unsupported menu input type");
 };
 
+const askBusinessWithOllama = async (question, businessData) => {
+  const prompt = `
+Bạn là trợ lý AI quản lý cửa hàng F&B POS.
+
+Nhiệm vụ:
+Dựa vào dữ liệu hệ thống bên dưới để trả lời câu hỏi của quản lý.
+Trả lời bằng tiếng Việt, ngắn gọn, rõ ràng, có số liệu cụ thể.
+Không bịa dữ liệu ngoài phần được cung cấp.
+
+Câu hỏi:
+${question}
+
+Dữ liệu hệ thống:
+${JSON.stringify(businessData, null, 2)}
+`;
+
+  const response = await axios.post(`${process.env.OLLAMA_URL}/api/chat`, {
+    model: process.env.OLLAMA_MODEL || "qwen2.5:3b",
+    messages: [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+    stream: false,
+  });
+
+  const content = response.data?.message?.content;
+
+  if (!content) {
+    throw new Error("AI does not return content");
+  }
+
+  return content;
+};
+
+const askBusinessWithOllamaV2 = async (question, businessContext) => {
+  const prompt = `
+Ban la tro ly AI quan ly cua hang F&B POS.
+
+Nhiem vu:
+- Dua vao du lieu he thong duoc cung cap de tra loi cau hoi cua quan ly.
+- Tra loi bang tieng Viet, ngan gon, ro rang, uu tien so lieu cu the.
+- Neu cau hoi co lien quan den thoi gian, hay dua ra dung ky du lieu trong context.
+- Neu du lieu khong du de ket luan, hay noi ro "khong du du lieu".
+- Khong duoc tu bo sung so lieu ngoai context.
+
+Huong dan tra loi:
+- Neu nguoi dung hoi tong quan, hay tom tat 2-4 y chinh nhat.
+- Neu nguoi dung hoi so sanh, hay chi ra muc cao nhat hoac thap nhat neu co.
+- Neu nguoi dung hoi ve doanh thu, co the de cap tong doanh thu, so don, gia tri don trung binh, no va co cau thanh toan neu co trong du lieu.
+- Neu nguoi dung hoi ve van hanh, co the de cap top mon, ton kho, bep, don huy, cong no, loai don, khach hang tuy theo du lieu co san.
+
+Cau hoi:
+${question}
+
+Context he thong:
+${JSON.stringify(businessContext, null, 2)}
+`;
+
+  const response = await axios.post(`${process.env.OLLAMA_URL}/api/chat`, {
+    model: process.env.OLLAMA_MODEL || "qwen2.5:3b",
+    messages: [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+    stream: false,
+  });
+
+  const content = response.data?.message?.content;
+
+  if (!content) {
+    throw new Error("AI does not return content");
+  }
+
+  return content;
+};
+
 module.exports = {
   parseOrderByAI,
   parseMenuByAI,
   extractMenuTextFromImageWithOllama,
+  askBusinessWithOllama: askBusinessWithOllamaV2,
 };

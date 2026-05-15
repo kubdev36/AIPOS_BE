@@ -3,11 +3,37 @@ const router = express.Router();
 
 const toppingController = require("../controllers/topping.controller");
 const authMiddleware = require("../middlewares/auth.middleware");
+const roleMiddleware = require("../middlewares/role.middleware");
 
-router.get("/", authMiddleware, toppingController.getToppings);
-router.get("/:id", authMiddleware, toppingController.getToppingById);
-router.post("/", authMiddleware, toppingController.createTopping);
-router.put("/:id", authMiddleware, toppingController.updateTopping);
-router.delete("/:id", authMiddleware, toppingController.deleteTopping);
+router.get(
+  "/",
+  authMiddleware,
+  roleMiddleware("admin", "manager", "staff"),
+  toppingController.getToppings
+);
+router.get(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("admin", "manager", "staff"),
+  toppingController.getToppingById
+);
+router.post(
+  "/",
+  authMiddleware,
+  roleMiddleware("admin", "manager"),
+  toppingController.createTopping
+);
+router.put(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("admin", "manager"),
+  toppingController.updateTopping
+);
+router.delete(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("admin"),
+  toppingController.deleteTopping
+);
 
 module.exports = router;
